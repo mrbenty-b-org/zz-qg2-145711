@@ -1,0 +1,21 @@
+name: gate
+on:
+  pull_request:
+  merge_group:
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: the maintainer's real verification
+        run: |
+          echo "GATE-EVENT=${{ github.event_name }}"
+          echo "GATE-REF=${{ github.ref }}"
+          echo "GATE-SHA=${{ github.sha }}"
+          if [ "${{ github.event_name }}" = "merge_group" ]; then
+            echo "GATE-PHASE=verifying the combined tree (slow)"
+            sleep 300
+            echo "GATE-VERDICT=FAIL"
+            exit 1
+          fi
+          echo "GATE-VERDICT=PASS-ON-PR-HEAD"
